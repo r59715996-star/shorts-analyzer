@@ -42,6 +42,10 @@ CREATE TABLE IF NOT EXISTS clips (
     has_numbers INTEGER,
     has_examples INTEGER,
     insider_language INTEGER,
+    -- performance indices
+    vpi REAL,
+    lpi REAL,
+    cpi REAL,
     -- metadata
     created_at TEXT NOT NULL
 );
@@ -58,22 +62,31 @@ _QUAL_COLS = [
     "has_payoff", "has_numbers", "has_examples", "insider_language",
 ]
 
+_PERF_COLS = ["vpi", "lpi", "cpi"]
+
 _ALL_COLS = [
     "video_id", "channel_id", "channel_name", "title",
     "view_count", "like_count", "comment_count", "engagement_rate",
     "days_since_publish", "published_at",
     *_QUANT_COLS,
     *_QUAL_COLS,
+    *_PERF_COLS,
     "created_at",
 ]
 
 
 def init_db() -> None:
-    """Create the clips table if it doesn't exist."""
+    """Create the clips table if it doesn't exist, and migrate schema."""
     _DB_PATH.parent.mkdir(parents=True, exist_ok=True)
     con = sqlite3.connect(str(_DB_PATH))
     try:
         con.execute(_CREATE_TABLE)
+        # Migrate existing DBs: add columns that may not exist yet
+        for col in ("vpi REAL", "lpi REAL", "cpi REAL"):
+            try:
+                con.execute(f"ALTER TABLE clips ADD COLUMN {col}")
+            except sqlite3.OperationalError:
+                pass  # column already exists
         con.commit()
     finally:
         con.close()
@@ -106,6 +119,7 @@ def save_clips(
                 clip.get("published_at"),
                 *[quant.get(c) for c in _QUANT_COLS],
                 *[qual.get(c) for c in _QUAL_COLS],
+                *[clip.get(c) for c in _PERF_COLS],
                 now,
             )
             con.execute(sql, row)

@@ -82,3 +82,31 @@ class ChannelReport(BaseModel):
     common_traits_top: List[str] = []
     common_traits_bottom: List[str] = []
     raw_features: Optional[Dict[str, Any]] = None
+
+
+# --- SHAP insight models ---
+
+class FeatureInsightModel(BaseModel):
+    name: str
+    display_name: str
+    importance: float = Field(description="Mean |SHAP| value")
+    direction: str = Field(description="higher_is_better or lower_is_better")
+    stability: float = Field(ge=0, le=1, description="Bootstrap stability score")
+    passes_threshold: bool
+
+class InteractionInsightModel(BaseModel):
+    feature_a: str
+    feature_b: str
+    strength: float = Field(description="Mean |SHAP interaction| value")
+    threshold: float = Field(description="Permutation-derived cutoff exceeded")
+    description: str
+
+class ModelInsightsResponse(BaseModel):
+    loocv_r2: float
+    permutation_rank: float = Field(ge=0, le=1)
+    signal_detected: bool
+    stability_threshold: float
+    n_samples: int
+    features: List[FeatureInsightModel] = []
+    interactions: List[InteractionInsightModel] = []
+    recommendations: List[Recommendation] = []
