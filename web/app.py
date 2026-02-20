@@ -9,7 +9,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from web.db import init_db
+from web.db import init_db, load_clips_for_report
 from web.insight_model import (
     fit_and_explain,
     generate_shap_recommendations,
@@ -24,6 +24,7 @@ from web.models import (
     JobStatusResponse,
     ModelInsightsResponse,
 )
+from web.report_generator import generate_report
 from web.worker import create_job, get_job, run_pipeline
 
 app = FastAPI(title="Channel Insights", version="1.0.0")
@@ -69,6 +70,16 @@ async def report(job_id: str):
     if job.stage != JobStage.completed or job.report is None:
         raise HTTPException(status_code=202, detail="Report not ready yet")
     return job.report.model_dump()
+
+
+@app.get("/api/report/channel/{channel_id}")
+async def report_from_db(channel_id: str):
+    """Regenerate quartile report from persisted clip data."""
+    clips = load_clips_for_report(channel_id)
+    if not clips:
+        raise HTTPException(status_code=404, detail="No clips found for this channel")
+    channel_name = clips[0].get("channel_name") or channel_id
+    return generate_report(clips, channel_name, channel_id).model_dump()
 
 
 @app.get("/api/insights/{channel_id}")

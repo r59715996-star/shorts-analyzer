@@ -126,3 +126,37 @@ def save_clips(
         con.commit()
     finally:
         con.close()
+
+
+def load_clips_for_report(channel_id: str) -> List[Dict[str, Any]]:
+    """Load clips from DB in the nested format that report_generator expects.
+
+    Returns list of dicts with top-level metadata + nested quant_features/qual_features.
+    """
+    con = sqlite3.connect(str(_DB_PATH))
+    con.row_factory = sqlite3.Row
+    try:
+        rows = con.execute(
+            "SELECT * FROM clips WHERE channel_id = ?", (channel_id,)
+        ).fetchall()
+    finally:
+        con.close()
+
+    clips = []
+    for row in rows:
+        r = dict(row)
+        clip: Dict[str, Any] = {
+            "video_id": r.get("video_id"),
+            "channel_name": r.get("channel_name"),
+            "title": r.get("title"),
+            "view_count": r.get("view_count"),
+            "like_count": r.get("like_count"),
+            "comment_count": r.get("comment_count"),
+            "engagement_rate": r.get("engagement_rate"),
+            "days_since_publish": r.get("days_since_publish"),
+            "published_at": r.get("published_at"),
+            "quant_features": {c: r.get(c) for c in _QUANT_COLS},
+            "qual_features": {c: r.get(c) for c in _QUAL_COLS},
+        }
+        clips.append(clip)
+    return clips
