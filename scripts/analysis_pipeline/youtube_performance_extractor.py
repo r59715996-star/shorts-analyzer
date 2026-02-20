@@ -158,19 +158,31 @@ def fetch_video_details(youtube, video_ids: List[str]) -> List[Dict]:
     return details
 
 
-def is_short(duration_iso8601: str) -> bool:
-    """Determine if a video duration corresponds to a Short (<= 180s)."""
+MIN_SHORT_DURATION_S = 10
+MAX_SHORT_DURATION_S = 180
+
+
+def parse_duration_seconds(duration_iso8601: str) -> int | None:
+    """Parse an ISO 8601 duration string and return total seconds, or None if unparseable."""
     import re
 
-    if "H" in (duration_iso8601 or ""):
-        return False
+    if not duration_iso8601 or "H" in duration_iso8601:
+        return None
 
-    match = re.match(r"^PT(?:(\d+)M)?(?:(\d+)S)?$", duration_iso8601 or "")
+    match = re.match(r"^PT(?:(\d+)M)?(?:(\d+)S)?$", duration_iso8601)
     if not match:
-        return False
+        return None
     minutes = int(match.group(1) or 0)
     seconds = int(match.group(2) or 0)
-    return (minutes * 60 + seconds) <= 180
+    return minutes * 60 + seconds
+
+
+def is_short(duration_iso8601: str) -> bool:
+    """Determine if a video duration corresponds to a Short (10-180s)."""
+    total = parse_duration_seconds(duration_iso8601)
+    if total is None:
+        return False
+    return MIN_SHORT_DURATION_S <= total <= MAX_SHORT_DURATION_S
 
 
 def compute_days_since(published_at: str) -> int:
@@ -215,7 +227,8 @@ def extract_shorts_performance(
     channel_name: Optional[str] = None
     for detail in details:
         duration = detail.get("contentDetails", {}).get("duration", "")
-        if not is_short(duration):
+        duration_s = parse_duration_seconds(duration)
+        if duration_s is None or not (MIN_SHORT_DURATION_S <= duration_s <= MAX_SHORT_DURATION_S):
             continue
 
         stats = detail.get("statistics", {})
@@ -229,6 +242,7 @@ def extract_shorts_performance(
         shorts.append(
             {
                 "video_id": detail.get("id"),
+                "duration_s": duration_s,
                 "view_count": int(stats.get("viewCount", 0) or 0),
                 "like_count": int(stats.get("likeCount", 0) or 0),
                 "comment_count": int(stats.get("commentCount", 0) or 0),

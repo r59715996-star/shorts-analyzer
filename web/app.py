@@ -9,10 +9,13 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from web.db import init_db
 from web.models import AnalyzeRequest, JobStage, JobStatusResponse
 from web.worker import create_job, get_job, run_pipeline
 
 app = FastAPI(title="Channel Insights", version="1.0.0")
+
+init_db()
 
 # Static files
 _STATIC_DIR = Path(__file__).parent / "static"

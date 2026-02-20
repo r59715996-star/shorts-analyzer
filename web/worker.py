@@ -15,6 +15,8 @@ if str(_PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(_PROJECT_ROOT))
 
 from scripts.analysis_pipeline.youtube_performance_extractor import (
+    MAX_SHORT_DURATION_S,
+    MIN_SHORT_DURATION_S,
     build_youtube_client,
     extract_shorts_performance,
 )
@@ -29,6 +31,7 @@ from scripts.data_pipeline.groq_qual_client import (
     get_groq_client,
 )
 from web.channel_parser import parse_channel_url
+from web.db import save_clips
 from web.models import ChannelReport, JobStage
 from web.report_generator import generate_report
 
@@ -134,6 +137,11 @@ async def run_pipeline(job: Job) -> None:
         async def process_single_clip(clip: Dict[str, Any]) -> Optional[Dict[str, Any]]:
             nonlocal completed_count
             video_id = clip.get("video_id", "")
+            dur = clip.get("duration_s")
+            if dur is not None and not (MIN_SHORT_DURATION_S <= dur <= MAX_SHORT_DURATION_S):
+                print(f"Skipping {video_id}: duration {dur}s outside {MIN_SHORT_DURATION_S}-{MAX_SHORT_DURATION_S}s range")
+                completed_count += 1
+                return None
             async with semaphore:
                 try:
                     result = await asyncio.to_thread(
@@ -166,6 +174,9 @@ async def run_pipeline(job: Job) -> None:
 
         if not processed_clips:
             raise ValueError("All clip processing failed")
+
+        # Persist clip features to SQLite for future ML training
+        await asyncio.to_thread(save_clips, processed_clips, channel_id, job.channel_name)
 
         # Step 5: Generate report
         job.update(JobStage.generating_report, 90, "Generating insights report...")
