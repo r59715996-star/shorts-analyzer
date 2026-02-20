@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Channel Insights</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .fade-in { animation: fadeIn 0.4s ease-in; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .bar-fill { transition: width 0.5s ease-in-out; }
+  </style>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen">
+
+  <!-- Header -->
+  <header class="border-b border-gray-800 px-6 py-4">
+    <h1 class="text-xl font-bold text-white">Channel Insights</h1>
+    <p class="text-sm text-gray-400">Discover what separates your top Shorts from your worst</p>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-6 py-10">
+
+    <!-- Step 1: Input Form -->
+    <section id="form-section">
+      <div class="bg-gray-900 rounded-xl border border-gray-800 p-8">
+        <h2 class="text-2xl font-semibold mb-2">Analyze Your Channel</h2>
+        <p class="text-gray-400 mb-6">Paste your YouTube channel URL and we'll analyze your last 50 Shorts to find patterns in your top vs bottom performers.</p>
+        <form id="analyze-form" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1">YouTube Channel URL</label>
+            <input
+              type="text"
+              id="channel-url"
+              placeholder="https://youtube.com/@YourChannel"
+              required
+              class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1">Email</label>
+            <input
+              type="email"
+              id="email"
+              placeholder="you@example.com"
+              required
+              class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          <button
+            type="submit"
+            id="submit-btn"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+          >
+            Analyze My Channel
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Step 2: Progress -->
+    <section id="progress-section" class="hidden">
+      <div class="bg-gray-900 rounded-xl border border-gray-800 p-8 fade-in">
+        <h2 class="text-xl font-semibold mb-1" id="progress-title">Analyzing...</h2>
+        <p class="text-gray-400 text-sm mb-4" id="progress-channel"></p>
+        <div class="w-full bg-gray-800 rounded-full h-4 mb-3 overflow-hidden">
+          <div id="progress-bar" class="bg-blue-600 h-4 rounded-full bar-fill" style="width: 0%"></div>
+        </div>
+        <p class="text-sm text-gray-400" id="progress-message">Starting...</p>
+        <p class="text-xs text-gray-500 mt-1" id="progress-pct">0%</p>
+      </div>
+    </section>
+
+    <!-- Step 3: Report -->
+    <section id="report-section" class="hidden space-y-6">
+      <div class="bg-gray-900 rounded-xl border border-gray-800 p-8 fade-in">
+        <h2 class="text-2xl font-semibold mb-1" id="report-title"></h2>
+        <p class="text-gray-400 text-sm" id="report-subtitle"></p>
+      </div>
+
+      <!-- Recommendations -->
+      <div class="bg-gray-900 rounded-xl border border-gray-800 p-8 fade-in">
+        <h3 class="text-lg font-semibold mb-4">Recommendations</h3>
+        <div id="recs-container" class="space-y-4"></div>
+      </div>
+
+      <!-- Feature Comparisons -->
+      <div class="bg-gray-900 rounded-xl border border-gray-800 p-8 fade-in">
+        <h3 class="text-lg font-semibold mb-4">Feature Comparison: Top 25% vs Bottom 25%</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-gray-400 border-b border-gray-800">
+                <th class="text-left py-2 pr-4">Feature</th>
+                <th class="text-right py-2 px-3">Top 25%</th>
+                <th class="text-right py-2 px-3">Bottom 25%</th>
+                <th class="text-right py-2 px-3">Diff</th>
+                <th class="text-right py-2 px-3">Effect Size</th>
+                <th class="text-center py-2 pl-3">Sig.</th>
+              </tr>
+            </thead>
+            <tbody id="features-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Hook Type Breakdown -->
+      <div class="bg-gray-900 rounded-xl border border-gray-800 p-8 fade-in">
+        <h3 class="text-lg font-semibold mb-4">Hook Type Breakdown</h3>
+        <div id="hooks-container" class="space-y-3"></div>
+      </div>
+
+      <!-- Top & Bottom Performers -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-gray-900 rounded-xl border border-gray-800 p-6 fade-in">
+          <h3 class="text-lg font-semibold mb-3 text-green-400">Top Performers</h3>
+          <div id="top-performers" class="space-y-2"></div>
+        </div>
+        <div class="bg-gray-900 rounded-xl border border-gray-800 p-6 fade-in">
+          <h3 class="text-lg font-semibold mb-3 text-red-400">Bottom Performers</h3>
+          <div id="bottom-performers" class="space-y-2"></div>
+        </div>
+      </div>
+
+      <!-- Common Traits -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-gray-900 rounded-xl border border-gray-800 p-6 fade-in">
+          <h3 class="text-lg font-semibold mb-3 text-green-400">Top Tier Traits</h3>
+          <ul id="traits-top" class="space-y-1 text-sm text-gray-300"></ul>
+        </div>
+        <div class="bg-gray-900 rounded-xl border border-gray-800 p-6 fade-in">
+          <h3 class="text-lg font-semibold mb-3 text-red-400">Bottom Tier Traits</h3>
+          <ul id="traits-bottom" class="space-y-1 text-sm text-gray-300"></ul>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Error -->
+    <section id="error-section" class="hidden">
+      <div class="bg-red-900/30 border border-red-800 rounded-xl p-8 fade-in">
+        <h2 class="text-xl font-semibold text-red-400 mb-2">Analysis Failed</h2>
+        <p class="text-gray-300" id="error-message"></p>
+        <button onclick="reset()" class="mt-4 bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm">Try Again</button>
+      </div>
+    </section>
+
+  </main>
+
+<script>
+const formSection = document.getElementById('form-section');
+const progressSection = document.getElementById('progress-section');
+const reportSection = document.getElementById('report-section');
+const errorSection = document.getElementById('error-section');
+
+let pollInterval = null;
+
+document.getElementById('analyze-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const url = document.getElementById('channel-url').value.trim();
+  const email = document.getElementById('email').value.trim();
+  if (!url || !email) return;
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Starting...';
+
+  try {
+    const resp = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ channel_url: url, email }),
+    });
+    if (!resp.ok) throw new Error(`Server error: ${resp.status}`);
+    const data = await resp.json();
+    startPolling(data.job_id);
+  } catch (err) {
+    showError(err.message);
+    btn.disabled = false;
+    btn.textContent = 'Analyze My Channel';
+  }
+});
+
+function startPolling(jobId) {
+  formSection.classList.add('hidden');
+  progressSection.classList.remove('hidden');
+  pollInterval = setInterval(() => pollStatus(jobId), 2000);
+  pollStatus(jobId);
+}
+
+async function pollStatus(jobId) {
+  try {
+    const resp = await fetch(`/api/status/${jobId}`);
+    if (!resp.ok) throw new Error('Lost connection to server');
+    const data = await resp.json();
+
+    document.getElementById('progress-bar').style.width = data.progress + '%';
+    document.getElementById('progress-message').textContent = data.message;
+    document.getElementById('progress-pct').textContent = data.progress + '%';
+    if (data.channel_name) {
+      document.getElementById('progress-channel').textContent = data.channel_name;
+    }
+
+    if (data.stage === 'completed') {
+      clearInterval(pollInterval);
+      await fetchReport(jobId);
+    } else if (data.stage === 'failed') {
+      clearInterval(pollInterval);
+      showError(data.message);
+    }
+  } catch (err) {
+    clearInterval(pollInterval);
+    showError(err.message);
+  }
+}
+
+async function fetchReport(jobId) {
+  const resp = await fetch(`/api/report/${jobId}`);
+  if (!resp.ok) { showError('Failed to fetch report'); return; }
+  const report = await resp.json();
+  renderReport(report);
+}
+
+function renderReport(r) {
+  progressSection.classList.add('hidden');
+  reportSection.classList.remove('hidden');
+
+  document.getElementById('report-title').textContent = r.channel_name;
+  document.getElementById('report-subtitle').textContent =
+    `${r.total_shorts_analyzed} Shorts analyzed | Top ${r.top_tier_count} vs Bottom ${r.bottom_tier_count}`;
+
+  // Recommendations
+  const recsEl = document.getElementById('recs-container');
+  recsEl.innerHTML = '';
+  (r.recommendations || []).forEach((rec, i) => {
+    recsEl.innerHTML += `
+      <div class="bg-gray-800 rounded-lg p-4 border-l-4 border-blue-500">
+        <div class="flex items-start gap-3">
+          <span class="bg-blue-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 mt-0.5">${i + 1}</span>
+          <div>
+            <h4 class="font-semibold text-white">${esc(rec.title)}</h4>
+            <p class="text-gray-300 text-sm mt-1">${esc(rec.detail)}</p>
+            <p class="text-gray-500 text-xs mt-2">${esc(rec.evidence)}</p>
+          </div>
+        </div>
+      </div>`;
+  });
+
+  // Feature table
+  const tbody = document.getElementById('features-table');
+  tbody.innerHTML = '';
+  (r.feature_comparisons || []).forEach(f => {
+    const sigDot = f.significant
+      ? '<span class="inline-block w-2 h-2 bg-green-400 rounded-full"></span>'
+      : '<span class="inline-block w-2 h-2 bg-gray-600 rounded-full"></span>';
+    const diffColor = f.difference > 0 ? 'text-green-400' : f.difference < 0 ? 'text-red-400' : 'text-gray-400';
+    tbody.innerHTML += `
+      <tr class="border-b border-gray-800/50">
+        <td class="py-2 pr-4 text-gray-200">${esc(f.feature)}</td>
+        <td class="py-2 px-3 text-right font-mono text-sm">${fmt(f.top_mean)}</td>
+        <td class="py-2 px-3 text-right font-mono text-sm">${fmt(f.bottom_mean)}</td>
+        <td class="py-2 px-3 text-right font-mono text-sm ${diffColor}">${fmtDiff(f.difference)}</td>
+        <td class="py-2 px-3 text-right font-mono text-sm">${f.cohens_d != null ? f.cohens_d.toFixed(2) : '-'}</td>
+        <td class="py-2 pl-3 text-center">${sigDot}</td>
+      </tr>`;
+  });
+
+  // Hook breakdown
+  const hooksEl = document.getElementById('hooks-container');
+  hooksEl.innerHTML = '';
+  const maxEng = Math.max(...(r.hook_type_breakdown || []).map(h => h.avg_engagement), 0.001);
+  (r.hook_type_breakdown || []).forEach(h => {
+    const pct = (h.avg_engagement / maxEng * 100).toFixed(0);
+    hooksEl.innerHTML += `
+      <div>
+        <div class="flex justify-between text-sm mb-1">
+          <span class="text-gray-200 font-medium">${esc(h.hook_type)}</span>
+          <span class="text-gray-400">${h.count} clips | eng: ${(h.avg_engagement * 100).toFixed(2)}%</span>
+        </div>
+        <div class="w-full bg-gray-800 rounded-full h-2">
+          <div class="bg-purple-500 h-2 rounded-full bar-fill" style="width:${pct}%"></div>
+        </div>
+      </div>`;
+  });
+
+  // Performers
+  renderPerformers('top-performers', r.top_performers || [], 'green');
+  renderPerformers('bottom-performers', r.bottom_performers || [], 'red');
+
+  // Traits
+  renderTraits('traits-top', r.common_traits_top || []);
+  renderTraits('traits-bottom', r.common_traits_bottom || []);
+}
+
+function renderPerformers(elId, performers, color) {
+  const el = document.getElementById(elId);
+  el.innerHTML = '';
+  performers.forEach(p => {
+    el.innerHTML += `
+      <a href="https://youtube.com/shorts/${p.video_id}" target="_blank"
+         class="block bg-gray-800 rounded-lg p-3 hover:bg-gray-750 transition-colors">
+        <p class="text-sm text-gray-200 truncate">${esc(p.title)}</p>
+        <div class="flex gap-3 text-xs text-gray-400 mt-1">
+          <span>${p.view_count.toLocaleString()} views</span>
+          <span>eng: ${(p.engagement_rate * 100).toFixed(3)}%</span>
+        </div>
+      </a>`;
+  });
+}
+
+function renderTraits(elId, traits) {
+  const el = document.getElementById(elId);
+  el.innerHTML = '';
+  traits.forEach(t => {
+    el.innerHTML += `<li class="flex items-start gap-2"><span class="text-gray-500 mt-0.5">-</span> ${esc(t)}</li>`;
+  });
+}
+
+function showError(msg) {
+  formSection.classList.add('hidden');
+  progressSection.classList.add('hidden');
+  reportSection.classList.add('hidden');
+  errorSection.classList.remove('hidden');
+  document.getElementById('error-message').textContent = msg;
+}
+
+function reset() {
+  errorSection.classList.add('hidden');
+  reportSection.classList.add('hidden');
+  progressSection.classList.add('hidden');
+  formSection.classList.remove('hidden');
+  document.getElementById('submit-btn').disabled = false;
+  document.getElementById('submit-btn').textContent = 'Analyze My Channel';
+}
+
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s || '';
+  return d.innerHTML;
+}
+
+function fmt(v) {
+  if (v == null) return '-';
+  if (Math.abs(v) >= 100) return v.toFixed(1);
+  if (Math.abs(v) >= 1) return v.toFixed(2);
+  return v.toFixed(4);
+}
+
+function fmtDiff(v) {
+  if (v == null) return '-';
+  const sign = v > 0 ? '+' : '';
+  return sign + fmt(v);
+}
+</script>
+</body>
+</html>
