@@ -1,6 +1,7 @@
 """SQLite persistence for per-clip feature data."""
 from __future__ import annotations
 
+import json
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
@@ -42,6 +43,8 @@ CREATE TABLE IF NOT EXISTS clips (
     has_numbers INTEGER,
     has_examples INTEGER,
     insider_language INTEGER,
+    -- youtube topic categories
+    topic_slugs TEXT,
     -- performance indices
     vpi REAL,
     lpi REAL,
@@ -62,6 +65,8 @@ _QUAL_COLS = [
     "has_payoff", "has_numbers", "has_examples", "insider_language",
 ]
 
+_YOUTUBE_COLS = ["topic_slugs"]
+
 _PERF_COLS = ["vpi", "lpi", "cpi"]
 
 _ALL_COLS = [
@@ -70,6 +75,7 @@ _ALL_COLS = [
     "days_since_publish", "published_at",
     *_QUANT_COLS,
     *_QUAL_COLS,
+    *_YOUTUBE_COLS,
     *_PERF_COLS,
     "created_at",
 ]
@@ -82,7 +88,7 @@ def init_db() -> None:
     try:
         con.execute(_CREATE_TABLE)
         # Migrate existing DBs: add columns that may not exist yet
-        for col in ("vpi REAL", "lpi REAL", "cpi REAL"):
+        for col in ("topic_slugs TEXT", "vpi REAL", "lpi REAL", "cpi REAL"):
             try:
                 con.execute(f"ALTER TABLE clips ADD COLUMN {col}")
             except sqlite3.OperationalError:
@@ -119,6 +125,7 @@ def save_clips(
                 clip.get("published_at"),
                 *[quant.get(c) for c in _QUANT_COLS],
                 *[qual.get(c) for c in _QUAL_COLS],
+                json.dumps(clip.get("topic_categories_slugs") or []),
                 *[clip.get(c) for c in _PERF_COLS],
                 now,
             )
