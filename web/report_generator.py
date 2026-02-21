@@ -14,48 +14,46 @@ from web.models import (
 )
 
 
-# Features to compare (quant features from quant_v1)
+# Features to compare (computed quant features — no raw counts)
 QUANT_FEATURES = [
     "duration_s",
-    "word_count",
     "wpm",
-    "hook_word_count",
     "hook_wpm",
-    "filler_count",
     "filler_density",
-    "question_start",
     "first_person_ratio",
     "second_person_ratio",
-    "num_sentences",
     "reading_level",
+    "lexical_diversity",
+    "avg_sentence_length",
+    "hook_density",
+    "repetition_score",
 ]
 
 # Binary qualitative features
 BINARY_QUAL_FEATURES = [
-    "has_payoff",
     "has_numbers",
     "has_examples",
-    "insider_language",
+    "has_cta",
+    "has_social_proof",
 ]
 
 # Feature display names
 FEATURE_LABELS = {
     "duration_s": "Duration (seconds)",
-    "word_count": "Word Count",
     "wpm": "Words Per Minute",
-    "hook_word_count": "Hook Word Count (first 3s)",
     "hook_wpm": "Hook Words Per Minute",
-    "filler_count": "Filler Words",
     "filler_density": "Filler Density",
-    "question_start": "Opens With Question",
     "first_person_ratio": "First Person Ratio (I/me/we)",
     "second_person_ratio": "Second Person Ratio (you/your)",
-    "num_sentences": "Sentence Count",
     "reading_level": "Reading Level (Flesch-Kincaid)",
-    "has_payoff": "Has Payoff",
+    "lexical_diversity": "Lexical Diversity",
+    "avg_sentence_length": "Avg Sentence Length",
+    "hook_density": "Hook Density",
+    "repetition_score": "Repetition Score",
     "has_numbers": "Uses Numbers/Stats",
     "has_examples": "Has Concrete Examples",
-    "insider_language": "Uses Insider Language",
+    "has_cta": "Has Call to Action",
+    "has_social_proof": "Has Social Proof",
 }
 
 
@@ -336,31 +334,33 @@ def extract_common_traits(clips: List[Dict[str, Any]], tier: str) -> List[str]:
     if wpms:
         traits.append(f"Average speaking pace: {_mean(wpms):.0f} WPM")
 
-    # Question openers
-    q_starts = [
-        (c.get("quant_features") or {}).get("question_start", False)
+    # Most common structure type
+    structures = [
+        (c.get("qual_features") or {}).get("structure_type", "unknown")
         for c in clips
     ]
-    q_pct = sum(1 for q in q_starts if q) / len(q_starts) * 100 if q_starts else 0
-    if q_pct > 30:
-        traits.append(f"{q_pct:.0f}% open with a question")
+    if structures:
+        most_common_struct = Counter(structures).most_common(1)[0]
+        pct = most_common_struct[1] / len(structures) * 100
+        traits.append(f"{pct:.0f}% use '{most_common_struct[0]}' structure")
 
-    # Has payoff
-    payoffs = [
-        (c.get("qual_features") or {}).get("has_payoff", False)
+    # Has CTA
+    ctas = [
+        (c.get("qual_features") or {}).get("has_cta", False)
         for c in clips
     ]
-    payoff_pct = sum(1 for p in payoffs if p) / len(payoffs) * 100 if payoffs else 0
-    traits.append(f"{payoff_pct:.0f}% deliver on the hook's promise")
+    cta_pct = sum(1 for c in ctas if c) / len(ctas) * 100 if ctas else 0
+    traits.append(f"{cta_pct:.0f}% include a call to action")
 
-    # Most common topic
-    topics = [
-        (c.get("qual_features") or {}).get("topic_primary", "other")
+    # Specificity level
+    specs = [
+        (c.get("qual_features") or {}).get("specificity_level", "unknown")
         for c in clips
     ]
-    if topics:
-        most_common_topic = Counter(topics).most_common(1)[0]
-        traits.append(f"Primary topic: '{most_common_topic[0]}' ({most_common_topic[1]}/{len(topics)})")
+    if specs:
+        most_common_spec = Counter(specs).most_common(1)[0]
+        pct = most_common_spec[1] / len(specs) * 100
+        traits.append(f"{pct:.0f}% have '{most_common_spec[0]}' specificity")
 
     return traits
 

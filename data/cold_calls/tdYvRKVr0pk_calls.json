@@ -1,0 +1,303 @@
+[
+  {
+    "start_time": "0:19:43",
+    "end_time": "0:21:59",
+    "classification": "connected_engaged",
+    "duration_estimate": 136,
+    "brief_summary": "The salesperson has a conversation with a prospect, introducing Starbridge and its capabilities in spotting early buying signals for public sector sellers."
+  },
+  {
+    "start_time": "[0:25:31]",
+    "end_time": "[0:27:37]",
+    "classification": "connected_engaged",
+    "duration_estimate": 396,
+    "brief_summary": "The salesperson had a conversation with John, explaining the Starbridge AI platform and its benefits, and they scheduled a meeting for the next day."
+  },
+  {
+    "start_time": "[0:31:10]",
+    "end_time": "[0:31:15]",
+    "classification": "not_connected",
+    "duration_estimate": 5,
+    "brief_summary": "The salesperson attempted to call Amanda but got a wrong number or no answer."
+  },
+  {
+    "start_time": "[0:32:03]",
+    "end_time": "[0:33:19]",
+    "classification": "connected_engaged",
+    "duration_estimate": 76,
+    "brief_summary": "The salesperson had a conversation with Dan, explaining the Starbridge AI platform, and they scheduled a meeting for the next week."
+  },
+  {
+    "start_time": "[0:33:44]",
+    "end_time": "[0:33:51]",
+    "classification": "not_connected",
+    "duration_estimate": 7,
+    "brief_summary": "The salesperson attempted to call but got a wrong number or no answer."
+  },
+  {
+    "start_time": "[0:34:20]",
+    "end_time": "[0:37:14]",
+    "classification": "connected_not_engaged",
+    "duration_estimate": 174,
+    "brief_summary": "The salesperson had a conversation with Megan, explaining the Starbridge AI platform, but she was not interested and asked for an email summary."
+  },
+  {
+    "start_time": "[0:37:42]",
+    "end_time": "[0:40:30]",
+    "classification": "connected_not_engaged",
+    "duration_estimate": 168,
+    "brief_summary": "The salesperson had a conversation with Antonio, explaining the Starbridge AI platform, but he was not interested and declined the meeting invitation."
+  },
+  {
+    "start_time": "[0:40:50]",
+    "end_time": "[0:40:55]",
+    "classification": "not_connected",
+    "duration_estimate": 5,
+    "brief_summary": "The salesperson attempted to call but got a wrong number or no answer."
+  },
+  {
+    "start_time": "[0:41:04]",
+    "end_time": "[0:41:12]",
+    "classification": "not_connected",
+    "duration_estimate": 8,
+    "brief_summary": "The salesperson attempted to call Taryn but got a wrong number or no answer."
+  },
+  {
+    "start_time": "[0:41:18]",
+    "end_time": "[0:41:40]",
+    "classification": "connected_not_engaged",
+    "duration_estimate": 22,
+    "brief_summary": "The salesperson started a conversation with Chris, explaining the Starbridge AI platform, but the call was cut off or not fully transcribed."
+  },
+  {
+    "start_time": "0:40:23",
+    "end_time": "0:40:30",
+    "classification": "not_connected",
+    "duration_estimate": 7,
+    "brief_summary": "Wrong number, not the right person"
+  },
+  {
+    "start_time": "0:40:50",
+    "end_time": "0:40:59",
+    "classification": "connected_not_engaged",
+    "duration_estimate": 9,
+    "brief_summary": "Reached a person but they hung up or refused within ~15 seconds"
+  },
+  {
+    "start_time": "0:43:43",
+    "end_time": "0:43:34",
+    "classification": "connected_not_engaged",
+    "duration_estimate": 9,
+    "brief_summary": "Reached a person but they hung up or refused within ~15 seconds"
+  },
+  {
+    "start_time": "0:43:45",
+    "end_time": "0:46:40",
+    "classification": "connected_engaged",
+    "duration_estimate": 175,
+    "brief_summary": "Real conversation happened, but no meeting was scheduled"
+  },
+  {
+    "start_time": "0:48:02",
+    "end_time": "0:54:06",
+    "classification": "booked",
+    "duration_estimate": 364,
+    "brief_summary": "A meeting/appointment was explicitly scheduled with Ellie"
+  },
+  {
+    "start_time": "0:57:11",
+    "end_time": "0:57:23",
+    "classification": "not_connected",
+    "duration_estimate": 12,
+    "brief_summary": "Gatekeeper block, not the right person"
+  },
+  {
+    "start_time": "0:57:47",
+    "end_time": "1:00:46",
+    "classification": "booked",
+    "duration_estimate": 179,
+    "brief_summary": "A meeting/appointment was explicitly scheduled with Kyle"
+  },
+  {
+    "start_time": "1:00:00",
+    "end_time": "1:02:53",
+    "classification": "connected_engaged",
+    "duration_estimate": 173,
+    "brief_summary": "Had a conversation with a prospect, discussed their challenges and booked a meeting for the next day."
+  },
+  {
+    "start_time": "1:05:32",
+    "end_time": "1:05:36",
+    "classification": "not_connected",
+    "duration_estimate": 4,
+    "brief_summary": "Left a voicemail for a prospect."
+  },
+  {
+    "start_time": "1:05:50",
+    "end_time": "1:06:45",
+    "classification": "connected_not_engaged",
+    "duration_estimate": 55,
+    "brief_summary": "Spoke with a gatekeeper who said the contact was not available and offered to send a message."
+  },
+  {
+    "start_time": "1:06:48",
+    "end_time": "1:07:25",
+    "classification": "not_connected",
+    "duration_estimate": 37,
+    "brief_summary": "Left a voicemail for a prospect."
+  },
+  {
+    "start_time": "1:07:36",
+    "end_time": "1:08:17",
+    "classification": "connected_not_engaged",
+    "duration_estimate": 41,
+    "brief_summary": "Spoke with a prospect who said they worked for a different company and were not interested."
+  },
+  {
+    "start_time": "1:09:04",
+    "end_time": "1:12:39",
+    "classification": "connected_engaged",
+    "duration_estimate": 215,
+    "brief_summary": "Had a conversation with a prospect, discussed their challenges and booked a meeting for Friday."
+  },
+  {
+    "start_time": "1:13:09",
+    "end_time": "1:13:24",
+    "classification": "not_connected",
+    "duration_estimate": 15,
+    "brief_summary": "Was told the prospect was not available and the call was ended."
+  },
+  {
+    "start_time": "1:13:39",
+    "end_time": "1:13:41",
+    "classification": "not_connected",
+    "duration_estimate": 2,
+    "brief_summary": "The call went straight to voicemail."
+  },
+  {
+    "start_time": "1:13:54",
+    "end_time": "1:21:05",
+    "classification": "connected_engaged",
+    "duration_estimate": 511,
+    "brief_summary": "Had a conversation with a prospect, discussed their challenges and decided to send over more information."
+  },
+  {
+    "start_time": "[1:20:00]",
+    "end_time": "[1:22:46]",
+    "classification": "connected_engaged",
+    "duration_estimate": 166,
+    "brief_summary": "A meeting was scheduled with the prospect for the following Wednesday at 12:00 PM Eastern time."
+  },
+  {
+    "start_time": "[1:23:52]",
+    "end_time": "[1:24:36]",
+    "classification": "connected_not_engaged",
+    "duration_estimate": 44,
+    "brief_summary": "The prospect, Sophie, stated that they don't sell much into SLED accounts and wasn't interested."
+  },
+  {
+    "start_time": "[1:25:25]",
+    "end_time": "[1:26:05]",
+    "classification": "not_connected",
+    "duration_estimate": 40,
+    "brief_summary": "The prospect, Jim, had retired and wasn't interested."
+  },
+  {
+    "start_time": "[1:26:11]",
+    "end_time": "[1:26:58]",
+    "classification": "connected_engaged",
+    "duration_estimate": 47,
+    "brief_summary": "The prospect, Jetson, referred Micah to Eric and provided his contact information."
+  },
+  {
+    "start_time": "[1:27:23]",
+    "end_time": "[1:30:47]",
+    "classification": "connected_engaged",
+    "duration_estimate": 204,
+    "brief_summary": "A meeting was scheduled with Eric for the following day at 1:30 PM Eastern time."
+  },
+  {
+    "start_time": "[1:32:38]",
+    "end_time": "[1:37:10]",
+    "classification": "connected_engaged",
+    "duration_estimate": 272,
+    "brief_summary": "A meeting was scheduled with Leah for the following Tuesday at 3:00 PM Eastern time."
+  },
+  {
+    "start_time": "[1:37:10]",
+    "end_time": "[1:39:08]",
+    "classification": "connected_not_engaged",
+    "duration_estimate": 118,
+    "brief_summary": "The prospect, Jody, stated that they don't sell into SLED accounts and wasn't interested."
+  },
+  {
+    "start_time": "[1:39:08]",
+    "end_time": "[1:41:48]",
+    "classification": "connected_engaged",
+    "duration_estimate": 160,
+    "brief_summary": "The prospect, Burke, stated that they have a full government strike force, but didn't think they were a good fit for Starbridge's services."
+  },
+  {
+    "start_time": "[1:40:00]",
+    "end_time": "[1:42:42]",
+    "classification": "connected_engaged",
+    "duration_estimate": 162,
+    "brief_summary": "The salesperson had a conversation with Rob, discussing the product and its potential application in the education sector."
+  },
+  {
+    "start_time": "[1:42:48]",
+    "end_time": "[1:42:51]",
+    "classification": "not_connected",
+    "duration_estimate": 3,
+    "brief_summary": "The salesperson dialed a wrong number and quickly ended the call."
+  },
+  {
+    "start_time": "[1:43:01]",
+    "end_time": "[1:43:09]",
+    "classification": "not_connected",
+    "duration_estimate": 8,
+    "brief_summary": "The salesperson had a brief conversation with someone who claimed to be the wrong person."
+  },
+  {
+    "start_time": "[1:43:09]",
+    "end_time": "[1:43:23]",
+    "classification": "connected_not_engaged",
+    "duration_estimate": 14,
+    "brief_summary": "The salesperson spoke with Chad, who immediately expressed disinterest in the product."
+  },
+  {
+    "start_time": "[1:43:32]",
+    "end_time": "[1:43:32]",
+    "classification": "not_connected",
+    "duration_estimate": 0,
+    "brief_summary": "The salesperson encountered a voicemail or automated message."
+  },
+  {
+    "start_time": "[1:43:41]",
+    "end_time": "[1:45:20]",
+    "classification": "connected_engaged",
+    "duration_estimate": 99,
+    "brief_summary": "The salesperson had a conversation with Joanna, discussing the product and its potential application in the education sector."
+  },
+  {
+    "start_time": "[1:45:26]",
+    "end_time": "[1:45:27]",
+    "classification": "not_connected",
+    "duration_estimate": 1,
+    "brief_summary": "The salesperson dialed a number but did not have a conversation."
+  },
+  {
+    "start_time": "[1:45:27]",
+    "end_time": "[1:48:44]",
+    "classification": "connected_engaged",
+    "duration_estimate": 197,
+    "brief_summary": "The salesperson had a conversation with Jamie, discussing the product and its potential application in the education sector."
+  },
+  {
+    "start_time": "2:00:12",
+    "end_time": "2:10:13",
+    "classification": "connected_engaged",
+    "duration_estimate": 601,
+    "brief_summary": "The salesperson had a conversation with Kyle, discussing how Starbridge can help 911 Restoration prioritize their time and target the right fire departments."
+  }
+]

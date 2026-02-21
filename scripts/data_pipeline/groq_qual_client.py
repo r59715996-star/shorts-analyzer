@@ -82,6 +82,102 @@ def compute_qual_v1_from_transcript(
     return call_qual_v1_tags(transcript_text, system_prompt)
 
 
+# --- Qual v2 ---
+
+QUAL_V2_FIELDS = {
+    "hook_type",
+    "has_numbers",
+    "has_examples",
+    "structure_type",
+    "has_cta",
+    "specificity_level",
+    "has_social_proof",
+}
+
+_HOOK_TYPE_ALLOWED = {"question", "claim", "story", "challenge"}
+_STRUCTURE_TYPE_ALLOWED = {"single_point", "list", "narrative", "comparison"}
+_SPECIFICITY_LEVEL_ALLOWED = {"vague", "moderate", "specific"}
+
+_CATEGORICAL_FALLBACKS = {
+    "hook_type": "claim",
+    "structure_type": "single_point",
+    "specificity_level": "moderate",
+}
+
+
+def call_qual_v2_tags(
+    transcript_text: str,
+    system_prompt: str,
+    model: str = "llama-3.3-70b-versatile",
+    temperature: float = 0.1,
+) -> Dict[str, object]:
+    """Call Groq LLM to generate v2 qualitative tags for a transcript."""
+    if not transcript_text.strip():
+        raise ValueError("transcript_text must not be empty.")
+
+    client = get_groq_client()
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {
+            "role": "user",
+            "content": (
+                "Return ONLY a JSON object with the 7 qualitative fields. "
+                "Here is the transcript:\n\n"
+                f"{transcript_text.strip()}"
+            ),
+        },
+    ]
+
+    response = client.chat.completions.create(
+        model=model,
+        messages=messages,
+        temperature=temperature,
+        top_p=1.0,
+        max_tokens=512,
+    )
+
+    payload = _extract_json_dict(response)
+    missing = QUAL_V2_FIELDS.difference(payload.keys())
+    if missing:
+        raise ValueError(
+            f"Groq v2 qualitative response missing fields: {sorted(missing)}"
+        )
+
+    # Validate and apply fallbacks for categoricals
+    allowed_sets = {
+        "hook_type": _HOOK_TYPE_ALLOWED,
+        "structure_type": _STRUCTURE_TYPE_ALLOWED,
+        "specificity_level": _SPECIFICITY_LEVEL_ALLOWED,
+    }
+    for field, allowed in allowed_sets.items():
+        val = payload.get(field)
+        if isinstance(val, str):
+            val = val.strip().lower()
+        if val not in allowed:
+            payload[field] = _CATEGORICAL_FALLBACKS[field]
+        else:
+            payload[field] = val
+
+    # Coerce booleans
+    for field in ("has_numbers", "has_examples", "has_cta", "has_social_proof"):
+        val = payload.get(field)
+        if isinstance(val, str):
+            payload[field] = val.strip().lower() == "true"
+        else:
+            payload[field] = bool(val)
+
+    return payload
+
+
+def compute_qual_v2_from_transcript(
+    transcript_json: Dict[str, Any],
+    system_prompt: str,
+) -> Dict[str, object]:
+    """Extract transcript text and call call_qual_v2_tags."""
+    transcript_text = _transcript_to_text(transcript_json)
+    return call_qual_v2_tags(transcript_text, system_prompt)
+
+
 def _extract_json_dict(response: Any) -> Dict[str, Any]:
     choices = getattr(response, "choices", None)
     if not choices:

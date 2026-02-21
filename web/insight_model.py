@@ -18,21 +18,21 @@ _DB_PATH = Path(__file__).resolve().parent.parent / "data" / "insights.db"
 
 # --- Feature configuration ---
 
-# Numeric features to keep (domain-knowledge reduction)
+# Numeric features (11)
 _NUMERIC_FEATURES = [
     "duration_s", "wpm", "hook_wpm", "filler_density",
-    "question_start", "first_person_ratio", "second_person_ratio",
-    "reading_level",
+    "first_person_ratio", "second_person_ratio", "reading_level",
+    "lexical_diversity", "avg_sentence_length", "hook_density", "repetition_score",
 ]
 
-# Binary qualitative features
+# Binary qualitative features (4)
 _BINARY_FEATURES = [
-    "has_payoff", "has_numbers", "has_examples", "insider_language",
+    "has_numbers", "has_examples", "has_cta", "has_social_proof",
 ]
 
-# Categorical features (LightGBM native categoricals)
+# Categorical features (3, LightGBM native categoricals)
 _CATEGORICAL_FEATURES = [
-    "hook_type", "hook_emotion", "topic_primary", "technical_depth",
+    "hook_type", "structure_type", "specificity_level",
 ]
 
 _ALL_MODEL_FEATURES = _NUMERIC_FEATURES + _BINARY_FEATURES + _CATEGORICAL_FEATURES
@@ -42,18 +42,20 @@ _DISPLAY_NAMES = {
     "wpm": "Words Per Minute",
     "hook_wpm": "Hook Words Per Minute",
     "filler_density": "Filler Density",
-    "question_start": "Opens With Question",
     "first_person_ratio": "First Person Ratio",
     "second_person_ratio": "Second Person Ratio",
     "reading_level": "Reading Level",
-    "has_payoff": "Has Payoff",
+    "lexical_diversity": "Lexical Diversity",
+    "avg_sentence_length": "Avg Sentence Length",
+    "hook_density": "Hook Density",
+    "repetition_score": "Repetition Score",
     "has_numbers": "Uses Numbers/Stats",
     "has_examples": "Has Concrete Examples",
-    "insider_language": "Uses Insider Language",
+    "has_cta": "Has Call to Action",
+    "has_social_proof": "Has Social Proof",
     "hook_type": "Hook Type",
-    "hook_emotion": "Hook Emotion",
-    "topic_primary": "Primary Topic",
-    "technical_depth": "Technical Depth",
+    "structure_type": "Structure Type",
+    "specificity_level": "Specificity Level",
 }
 
 

@@ -1,0 +1,218 @@
+[
+    {
+        "id": "call_01",
+        "connected": null,
+        "heard_pitch": null,
+        "relevant": null,
+        "pitched_meeting": null,
+        "meeting_booked": null,
+        "notes": "This was not a call, rather a pre-amble to the call"
+    },
+    {
+        "id": "call_02",
+        "connected": null,
+        "heard_pitch": null,
+        "relevant": null,
+        "pitched_meeting": null,
+        "meeting_booked": null,
+        "notes": "Not a call."
+    },
+    {
+        "id": "call_03",
+        "connected": null,
+        "heard_pitch": null,
+        "relevant": null,
+        "pitched_meeting": null,
+        "meeting_booked": null,
+        "notes": "Not a call."
+    },
+    {
+        "id": "call_04",
+        "connected": true,
+        "heard_pitch": true,
+        "relevant": false,
+        "pitched_meeting": true,
+        "meeting_booked": false,
+        "notes": "Not relevant persona, not really engaged."
+    },
+    {
+        "id": "call_05",
+        "connected": true,
+        "heard_pitch": true,
+        "relevant": false,
+        "pitched_meeting": true,
+        "meeting_booked": false,
+        "notes": "Not relevant persona, not really engaged."
+    },
+    {
+        "id": "call_06",
+        "connected": false,
+        "heard_pitch": null,
+        "relevant": null,
+        "pitched_meeting": null,
+        "meeting_booked": null,
+        "notes": "Straight to voicemail"
+    },
+    {
+        "id": "call_07",
+        "connected": true,
+        "heard_pitch": true,
+        "relevant": true,
+        "pitched_meeting": true,
+        "meeting_booked": false,
+        "notes": "Small relevancy signal."
+    },
+    {
+        "id": "call_08",
+        "connected": true,
+        "heard_pitch": true,
+        "relevant": true,
+        "pitched_meeting": true,
+        "meeting_booked": true,
+        "notes": "booked."
+    },
+    {
+        "id": "call_09",
+        "connected": true,
+        "heard_pitch": true,
+        "relevant": true,
+        "pitched_meeting": true,
+        "meeting_booked": true,
+        "notes": "call_09 and call_10 are the same call."
+    },
+    {
+        "id": "call_10",
+        "connected": null,
+        "heard_pitch": null,
+        "relevant": null,
+        "pitched_meeting": null,
+        "meeting_booked": null,
+        "notes": "call_09 and call_10 are the same call."
+    },
+    {
+        "id": "call_11",
+        "connected": true,
+        "heard_pitch": null,
+        "relevant": null,
+        "pitched_meeting": null,
+        "meeting_booked": null,
+        "notes": "Spoke with a gatekeeper who said the contact was not available and offered to send a message."
+    },
+    {
+        "id": "call_12",
+        "connected": true,
+        "heard_pitch": true,
+        "relevant": false,
+        "pitched_meeting": null,
+        "meeting_booked": null,
+        "notes": "Prospect worked at a different company."
+    },
+    {
+        "id": "call_13",
+        "connected": true,
+        "heard_pitch": true,
+        "relevant": true,
+        "pitched_meeting": true,
+        "meeting_booked": true,
+        "notes": "Meeting booked for Friday"
+    },
+    {
+        "id": "call_14",
+        "connected": true,
+        "heard_pitch": true,
+        "relevant": true,
+        "pitched_meeting": true,
+        "meeting_booked": false,
+        "notes": "Discussed challenges, decided to send more information"
+    },
+    {
+        "id": "call_15",
+        "connected": true,
+        "heard_pitch": true,
+        "relevant": true,
+        "pitched_meeting": true,
+        "meeting_booked": true,
+        "notes": "Meeting scheduled for the following Wednesday at 12:00 PM Eastern time"
+    },
+    {
+        "id": "call_16",
+        "connected": true,
+        "heard_pitch": true,
+        "relevant": false,
+        "pitched_meeting": null,
+        "meeting_booked": null,
+        "notes": "Prospect not interested, doesn't sell much into SLED accounts"
+    },
+    {
+        "id": "call_17",
+        "connected": true,
+        "heard_pitch": null,
+        "relevant": null,
+        "pitched_meeting": null,
+        "meeting_booked": null,
+        "notes": "Referred to Eric, not a relevant persona"
+    },
+    {
+        "id": "call_18",
+        "connected": true,
+        "heard_pitch": true,
+        "relevant": true,
+        "pitched_meeting": true,
+        "meeting_booked": true,
+        "notes": "Meeting scheduled with Eric for the following day at 1:30 PM Eastern time"
+    },
+    {
+        "id": "call_19",
+        "connected": true,
+        "heard_pitch": true,
+        "relevant": true,
+        "pitched_meeting": true,
+        "meeting_booked": true,
+        "notes": "Meeting scheduled with Leah for the following Tuesday at 3:00 PM Eastern time"
+    },
+    {
+        "id": "call_20",
+        "connected": true,
+        "heard_pitch": true,
+        "relevant": false,
+        "pitched_meeting": null,
+        "meeting_booked": null,
+        "notes": "Prospect not interested, doesn't sell into SLED accounts"
+    },
+    {
+        "id": "call_21",
+        "connected": true,
+        "heard_pitch": true,
+        "relevant": false,
+        "pitched_meeting": null,
+        "meeting_booked": null,
+        "notes": "Prospect has a full government strike force, but not a good fit for Starbridge's services"
+    },
+    {
+        "id": "call_22",
+        "connected": true,
+        "heard_pitch": true,
+        "relevant": false,
+        "pitched_meeting": null,
+        "meeting_booked": null,
+        "notes": "Prospect doesn't sell into SLED accounts, not a relevant persona"
+    },
+    {
+        "id": "call_23",
+        "connected": true,
+        "heard_pitch": true,
+        "relevant": false,
+        "pitched_meeting": null,
+        "meeting_booked": null,
+        "notes": "Prospect doesn't sell into SLED accounts, previously concluded not a fit"
+    },
+    {
+        "id": "call_24",
+        "connected": true,
+        "heard_pitch": true,
+        "relevant": true,
+        "pitched_meeting": true,
+        "meeting_booked": false,
+        "notes": "Discussed how Starbridge can help 911 Restoration prioritize time and target the right fire departments"
+    }
+]

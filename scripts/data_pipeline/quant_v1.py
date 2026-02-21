@@ -21,6 +21,29 @@ FIRST_PERSON = {
 
 SECOND_PERSON = {"you", "you're", "youre", "your", "yours", "u"}
 
+_STOPWORDS = {
+    "a", "an", "the", "and", "or", "but", "in", "on", "at", "to", "for",
+    "of", "with", "by", "from", "is", "it", "its", "was", "are", "be",
+    "been", "being", "have", "has", "had", "do", "does", "did", "will",
+    "would", "could", "should", "may", "might", "can", "shall", "not",
+    "no", "so", "if", "then", "that", "this", "these", "those", "there",
+    "here", "what", "which", "who", "whom", "how", "when", "where", "why",
+    "all", "each", "every", "both", "few", "more", "most", "other", "some",
+    "such", "than", "too", "very", "just", "about", "also", "as",
+}
+
+
+def _compute_repetition_score(tokens: List[str]) -> float:
+    """Fraction of content words (non-stopword) that appear 2+ times."""
+    content_words = [t for t in tokens if t and t not in _STOPWORDS]
+    if not content_words:
+        return 0.0
+    counts: Dict[str, int] = {}
+    for w in content_words:
+        counts[w] = counts.get(w, 0) + 1
+    repeated = sum(1 for w in content_words if counts[w] >= 2)
+    return repeated / len(content_words)
+
 
 def compute_quant_v1(whisper_json: Dict[str, Any]) -> Dict[str, Any]:
     """
@@ -51,7 +74,6 @@ def compute_quant_v1(whisper_json: Dict[str, Any]) -> Dict[str, Any]:
     filler_density = filler_count / word_count if word_count > 0 else 0.0
 
     sentences = _extract_sentences(" ".join(text_tokens))
-    question_start = bool(sentences) and sentences[0][1].endswith("?")
     num_sentences = len(sentences)
 
     first_person_count = sum(1 for token in lexical_tokens if token in FIRST_PERSON)
@@ -70,6 +92,27 @@ def compute_quant_v1(whisper_json: Dict[str, Any]) -> Dict[str, Any]:
             - 15.59
         )
 
+    # --- New v2 computed features ---
+
+    # Lexical diversity: type-token ratio
+    non_empty = [t for t in lexical_tokens if t]
+    lexical_diversity = len(set(non_empty)) / len(non_empty) if non_empty else 0.0
+
+    # Average sentence length
+    avg_sentence_length = word_count / num_sentences if num_sentences > 0 else 0.0
+
+    # Hook density: hook_wpm / rest_wpm (front-loading measure)
+    rest_duration = duration_s - 3.0
+    if rest_duration < 1.0:
+        hook_density = 1.0
+    else:
+        rest_word_count = word_count - hook_word_count
+        rest_wpm = rest_word_count / (rest_duration / 60.0) if rest_duration > 0 else 0.0
+        hook_density = hook_wpm / rest_wpm if rest_wpm > 0 else 1.0
+
+    # Repetition score
+    repetition_score = _compute_repetition_score(lexical_tokens)
+
     return {
         "duration_s": duration_s,
         "word_count": word_count,
@@ -78,11 +121,14 @@ def compute_quant_v1(whisper_json: Dict[str, Any]) -> Dict[str, Any]:
         "hook_wpm": hook_wpm,
         "filler_count": filler_count,
         "filler_density": filler_density,
-        "question_start": question_start,
         "first_person_ratio": first_person_ratio,
         "second_person_ratio": second_person_ratio,
         "num_sentences": num_sentences,
         "reading_level": reading_level,
+        "lexical_diversity": lexical_diversity,
+        "avg_sentence_length": avg_sentence_length,
+        "hook_density": hook_density,
+        "repetition_score": repetition_score,
     }
 
 

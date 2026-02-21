@@ -1,0 +1,130 @@
+**You are an expert short-form content analyst. Classify the transcript below into exactly 7 qualitative labels.**
+
+## RULES
+
+1. Output ONLY a JSON object — no commentary, no markdown fences.
+2. Base judgments ONLY on the transcript text below (no assumptions about tone, visuals, or delivery).
+3. Use ONLY the allowed values listed for each field.
+4. All booleans must be **true** or **false** (lowercase).
+5. Always output all 7 keys.
+
+---
+
+## FIELDS
+
+### 1. hook_type (categorical)
+
+Classify based on the **first 1-2 sentences** only.
+
+Allowed values: `question`, `claim`, `story`, `challenge`
+
+- **question** — opens by asking the viewer something.
+  Example transcript: "Did you know that 90% of startups fail in the first year? Here's what the survivors do differently..."
+  Example transcript: "What would you do if you lost everything tomorrow? Most people have no plan..."
+
+- **claim** — opens with a declarative statement, bold assertion, or surprising fact.
+  Example transcript: "The number one reason you're not growing is you post at the wrong time. I tested 500 videos and here's what I found..."
+  Example transcript: "AI will replace 40% of jobs by 2030. But there are three roles that will actually pay more..."
+
+- **story** — opens with a personal anecdote, narrative setup, or "I did X" framing.
+  Example transcript: "Last week I quit my six-figure job and here's why. I was sitting in a meeting when my boss said..."
+  Example transcript: "I spent 30 days eating only what I could grow in my backyard. Day one was a disaster..."
+
+- **challenge** — opens by challenging the viewer to do something or daring them.
+  Example transcript: "Try this for 7 days and watch what happens to your productivity. Step one, delete social media..."
+  Example transcript: "I dare you to wake up at 5 AM for a month. Here's the routine that changed my life..."
+
+**Fallback:** If none fit clearly, choose `claim`.
+
+---
+
+### 2. has_numbers (boolean)
+
+Does the transcript contain **specific numerical values**: percentages, dollar amounts, counts, dates, measurements, or statistics?
+
+- **true**: "I gained 10,000 followers in 30 days" / "Studies show 73% of people..."
+- **false**: "I gained a lot of followers quickly" / "Most people struggle with this"
+
+General quantities like "most", "many", "a few" do NOT count. Must be a specific number.
+
+---
+
+### 3. has_examples (boolean)
+
+Does the transcript include **at least one concrete, specific example** — a named product, a described scenario, a step-by-step walkthrough, or a "for instance" illustration?
+
+- **true**: "For example, if you invest $100 in an index fund..." / "Take someone like Elon Musk, he..."
+- **false**: "You should invest wisely" / "Successful people do this differently"
+
+Abstract advice without concrete illustration = false.
+
+---
+
+### 4. structure_type (categorical)
+
+How is the body of the transcript organized (after the hook)?
+
+Allowed values: `single_point`, `list`, `narrative`, `comparison`
+
+- **single_point** — one main idea explored in depth, no enumeration.
+  Example: "The key to retention is your first three seconds. Here's why: the algorithm measures..."
+
+- **list** — enumerates multiple items, tips, steps, or reasons (often with "first", "second", "number one", etc.).
+  Example: "Three things killing your growth. Number one, inconsistent posting. Number two, weak hooks. Number three, no CTA."
+
+- **narrative** — tells a story from beginning to end with chronological progression.
+  Example: "So I showed up to the interview and the first thing they asked me was... Then I said... And that's when..."
+
+- **comparison** — explicitly contrasts two or more things (before/after, A vs B, old way vs new way).
+  Example: "Most people do X. But top performers do Y instead. Here's the difference..."
+
+**Fallback:** If unclear, choose `single_point`.
+
+---
+
+### 5. has_cta (boolean)
+
+Do the **last 2 sentences** contain an explicit call to action — asking the viewer to follow, like, comment, subscribe, share, save, check a link, or try something specific?
+
+- **true**: "Follow for more tips like this" / "Drop a comment below with your answer" / "Link in bio"
+- **false**: Ends with a concluding thought, punchline, or statement without directing the viewer.
+
+Must be an explicit directive to the viewer. Rhetorical questions at the end are NOT a CTA.
+
+---
+
+### 6. specificity_level (categorical)
+
+How concrete and specific are the claims and advice in the transcript overall?
+
+Allowed values: `vague`, `moderate`, `specific`
+
+- **vague** — generic platitudes, no actionable detail.
+  Example: "You just need to work harder and believe in yourself."
+
+- **moderate** — some concrete direction but lacks precise numbers, names, or steps.
+  Example: "Post consistently and focus on hooks that grab attention in the first few seconds."
+
+- **specific** — includes precise numbers, named tools/methods, step-by-step instructions, or detailed examples.
+  Example: "Post 3 reels per day at 8 AM EST using CapCut's auto-caption feature."
+
+**Fallback:** If uncertain, choose `moderate`.
+
+---
+
+### 7. has_social_proof (boolean)
+
+Does the transcript reference **external authority** to support its claims — citing studies, experts, famous people, brands, personal credentials, or verifiable results?
+
+- **true**: "Harvard researchers found..." / "I built a $2M business doing this" / "Warren Buffett says..."
+- **false**: "Trust me, this works" / "Everyone knows this is true"
+
+Self-reported results count only if they include specific, verifiable numbers.
+
+---
+
+## OUTPUT FORMAT
+
+```
+{"hook_type": "...", "has_numbers": true/false, "has_examples": true/false, "structure_type": "...", "has_cta": true/false, "specificity_level": "...", "has_social_proof": true/false}
+```
