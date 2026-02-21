@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS clips (
     engagement_rate REAL,
     days_since_publish INTEGER,
     published_at TEXT,
-    -- quant features (12)
+    -- quant features (12 original — question_start no longer written)
     duration_s REAL,
     word_count INTEGER,
     wpm REAL,
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS clips (
     second_person_ratio REAL,
     num_sentences INTEGER,
     reading_level REAL,
-    -- qual features (8)
+    -- qual features v1 (columns kept for schema compat, no longer written)
     hook_type TEXT,
     hook_emotion TEXT,
     topic_primary TEXT,
@@ -56,13 +56,20 @@ CREATE TABLE IF NOT EXISTS clips (
 
 _QUANT_COLS = [
     "duration_s", "word_count", "wpm", "hook_word_count", "hook_wpm",
-    "filler_count", "filler_density", "question_start", "first_person_ratio",
+    "filler_count", "filler_density", "first_person_ratio",
     "second_person_ratio", "num_sentences", "reading_level",
+    "lexical_diversity", "avg_sentence_length", "hook_density", "repetition_score",
 ]
 
 _QUAL_COLS = [
-    "hook_type", "hook_emotion", "topic_primary", "technical_depth",
-    "has_payoff", "has_numbers", "has_examples", "insider_language",
+    "hook_type", "has_numbers", "has_examples",
+    "structure_type", "has_cta", "specificity_level", "has_social_proof",
+]
+
+_VISUAL_COLS = [
+    "v_brightness", "v_contrast", "v_edge_density", "v_colorfulness",
+    "v_face_present", "v_face_area_frac", "v_text_area_frac",
+    "v_motion_magnitude", "v_scene_cut",
 ]
 
 _YOUTUBE_COLS = ["topic_slugs"]
@@ -75,6 +82,7 @@ _ALL_COLS = [
     "days_since_publish", "published_at",
     *_QUANT_COLS,
     *_QUAL_COLS,
+    *_VISUAL_COLS,
     *_YOUTUBE_COLS,
     *_PERF_COLS,
     "created_at",
@@ -88,7 +96,21 @@ def init_db() -> None:
     try:
         con.execute(_CREATE_TABLE)
         # Migrate existing DBs: add columns that may not exist yet
-        for col in ("topic_slugs TEXT", "vpi REAL", "lpi REAL", "cpi REAL"):
+        _migrate_cols = [
+            "topic_slugs TEXT", "vpi REAL", "lpi REAL", "cpi REAL",
+            # v2 quant features
+            "lexical_diversity REAL", "avg_sentence_length REAL",
+            "hook_density REAL", "repetition_score REAL",
+            # v2 qual features
+            "structure_type TEXT", "has_cta INTEGER",
+            "specificity_level TEXT", "has_social_proof INTEGER",
+            # visual features v1
+            "v_brightness REAL", "v_contrast REAL", "v_edge_density REAL",
+            "v_colorfulness REAL", "v_face_present INTEGER",
+            "v_face_area_frac REAL", "v_text_area_frac REAL",
+            "v_motion_magnitude REAL", "v_scene_cut INTEGER",
+        ]
+        for col in _migrate_cols:
             try:
                 con.execute(f"ALTER TABLE clips ADD COLUMN {col}")
             except sqlite3.OperationalError:
@@ -125,6 +147,7 @@ def save_clips(
                 clip.get("published_at"),
                 *[quant.get(c) for c in _QUANT_COLS],
                 *[qual.get(c) for c in _QUAL_COLS],
+                *[clip.get("visual_features", {}).get(c) for c in _VISUAL_COLS],
                 json.dumps(clip.get("topic_categories_slugs") or []),
                 *[clip.get(c) for c in _PERF_COLS],
                 now,
@@ -164,6 +187,7 @@ def load_clips_for_report(channel_id: str) -> List[Dict[str, Any]]:
             "published_at": r.get("published_at"),
             "quant_features": {c: r.get(c) for c in _QUANT_COLS},
             "qual_features": {c: r.get(c) for c in _QUAL_COLS},
+            "visual_features": {c: r.get(c) for c in _VISUAL_COLS},
         }
         clips.append(clip)
     return clips

@@ -27,9 +27,10 @@ from scripts.analysis_pipeline.transcribe_inbox_clips import (
 )
 from scripts.data_pipeline.quant_v1 import compute_quant_v1
 from scripts.data_pipeline.groq_qual_client import (
-    compute_qual_v1_from_transcript,
+    compute_qual_v2_from_transcript,
     get_groq_client,
 )
+from scripts.data_pipeline.visual_v1 import download_short_video, compute_visual_v1
 from web.channel_parser import parse_channel_url
 from web.db import save_clips
 from web.models import ChannelReport, JobStage
@@ -40,7 +41,7 @@ from web.report_generator import generate_report
 MAX_CONCURRENT_CLIPS = 5
 
 # Load the qualitative prompt once
-_QUAL_PROMPT_PATH = _PROJECT_ROOT / "data" / "config" / "qualv1.txt"
+_QUAL_PROMPT_PATH = _PROJECT_ROOT / "data" / "config" / "qualv2.txt"
 
 
 def _load_qual_prompt() -> str:
@@ -149,6 +150,7 @@ async def run_pipeline(job: Job) -> None:
                     )
                     clip["quant_features"] = result["quant"]
                     clip["qual_features"] = result["qual"]
+                    clip["visual_features"] = result["visual"]
                     completed_count += 1
                     pct = 35 + int((completed_count / total) * 50)
                     job.update(
@@ -219,6 +221,18 @@ def _process_clip_sync(video_id: str, qual_prompt: str) -> Dict[str, Any]:
         quant = compute_quant_v1(transcript)
 
         # Extract qualitative features
-        qual = compute_qual_v1_from_transcript(transcript, qual_prompt)
+        qual = compute_qual_v2_from_transcript(transcript, qual_prompt)
 
-    return {"quant": quant, "qual": qual}
+        # Extract visual features
+        try:
+            video_path = tmp_path / f"{video_id}.mp4"
+            download_short_video(video_id, video_path)
+            visual = compute_visual_v1(video_path)
+        except Exception:
+            visual = {k: None for k in [
+                "v_brightness", "v_contrast", "v_edge_density", "v_colorfulness",
+                "v_face_present", "v_face_area_frac", "v_text_area_frac",
+                "v_motion_magnitude", "v_scene_cut",
+            ]}
+
+    return {"quant": quant, "qual": qual, "visual": visual}
